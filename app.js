@@ -25,10 +25,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //  Import route
 const vegetableRoutes = require('./routes/vegetable_routes');
 const fruitRoutes = require('./routes/fruit_routes');
+const authRoutes = require('./routes/auth_routes');
+const userRoutes = require('./routes/user_routes');
 
 // Use route
 app.use('/api/vegetables', vegetableRoutes);
 app.use('/api/fruits', fruitRoutes);
+app.use('/api/user', authRoutes);
+app.use('/api/user', userRoutes);
 
 // App listen
 app.listen(PORT, () => {
