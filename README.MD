@@ -14,7 +14,7 @@ Rest API for vegetables and fruits using node.js and mongoose
 # Todo
 
 -   [x] CRUD Vegetables
--   [] Create CRUD fruits
+-   [x] CRUD fruits
 -   [] Register
 -   [] Login
 -   [] Middleware protection
