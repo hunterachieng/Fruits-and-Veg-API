@@ -15,6 +15,6 @@ Rest API for vegetables and fruits using node.js and mongoose
 
 -   [x] CRUD Vegetables
 -   [x] CRUD fruits
--   [] Register
+-   [x] Register
 -   [] Login
 -   [] Middleware protection
