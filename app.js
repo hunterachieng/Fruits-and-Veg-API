@@ -24,9 +24,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //  Import route
 const vegetableRoutes = require('./routes/vegetable_routes');
+const fruitRoutes = require('./routes/fruit_routes');
 
 // Use route
 app.use('/api/vegetables', vegetableRoutes);
+app.use('/api/fruits', fruitRoutes);
 
 // App listen
 app.listen(PORT, () => {
