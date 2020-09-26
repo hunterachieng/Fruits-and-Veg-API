@@ -18,9 +18,7 @@ exports.getOneUser = async (req, res, next) => {
         const user = await User.findById(req.params.id);
 
         if (!user) {
-            return res.status(400).json({
-                message: 'There are no user with that id',
-            });
+            return res.status(400).send('There is no user exists');
         }
 
         res.status(200).json({
@@ -37,9 +35,9 @@ exports.deleteUser = async (req, res, next) => {
         const user = await User.findByIdAndDelete(req.params.id);
 
         if (!user) {
-            return res.status(400).json({
-                message: 'There are no user with that id',
-            });
+            return res
+                .status(400)
+                .send('There is no user exists with that id to delete');
         }
 
         res.status(204).json({

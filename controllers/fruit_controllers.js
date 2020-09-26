@@ -19,7 +19,7 @@ exports.getOneFruit = async (req, res, next) => {
         const fruit = await Fruit.findById(req.params.id);
 
         if (!fruit) {
-            return next('There is no fruit with that id');
+            return res.status(400).send('The fruit is not exists');
         }
 
         res.status(200).json({
@@ -52,7 +52,9 @@ exports.updateFruit = async (req, res, next) => {
         });
 
         if (!fruit) {
-            return next('There is no fruit with that id to update');
+            return res
+                .status(400)
+                .send('There is no fruit exists with that id to update');
         }
 
         res.status(200).json({
@@ -69,7 +71,9 @@ exports.deleteFruit = async (req, res, next) => {
         const fruit = await Fruit.findByIdAndDelete(req.params.id);
 
         if (!fruit) {
-            return next('There is no fruit with that id to delete');
+            return res
+                .status(400)
+                .send('There is no fruit exists with that id to delete');
         }
 
         res.status(204).json({

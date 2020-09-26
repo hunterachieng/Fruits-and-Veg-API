@@ -19,7 +19,7 @@ exports.getOneVegetable = async (req, res, next) => {
         const vegetable = await Vegetable.findById(req.params.id);
 
         if (!vegetable) {
-            return next('There is no vegetable with that id');
+            return res.status(400).send('There is no vegetable exists');
         }
 
         res.status(200).json({
@@ -56,7 +56,9 @@ exports.updateVegetable = async (req, res, next) => {
         );
 
         if (!vegetable) {
-            return next('There is no vegetable with that id to update');
+            return res
+                .status(400)
+                .send('There is no vegetable exists with that id to update');
         }
 
         res.status(200).json({
@@ -73,7 +75,9 @@ exports.deleteVegetable = async (req, res, next) => {
         const vegetable = await Vegetable.findByIdAndDelete(req.params.id);
 
         if (!vegetable) {
-            return next('There is no vegetable with that id to delete');
+            return res
+                .status(400)
+                .send('There is no vegetable exists with that id to delete');
         }
 
         res.status(204).json({
