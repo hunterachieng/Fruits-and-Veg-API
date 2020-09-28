@@ -84,3 +84,15 @@ exports.logout = async (req, res, next) => {
         return next(err);
     }
 };
+
+exports.routeProtect = async (req, res, next) => {
+    /* Need to be refactor to check current user id with session that store in cookie */
+    // const user = await User.findById(req.session.user);
+
+    if (!req.cookies.user_sid && !req.session.user) {
+        return res
+            .status(401)
+            .send('You are not logged in, Please log in first');
+    }
+    next();
+};
