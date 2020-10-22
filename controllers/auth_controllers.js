@@ -1,4 +1,5 @@
 const User = require('../models/Users');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 exports.register = async (req, res, next) => {
@@ -32,6 +33,39 @@ exports.register = async (req, res, next) => {
     }
 };
 
+// exports.login = async (req, res, next) => {
+//     try {
+//         if (req.cookies.user_sid) {
+//             return res.json({
+//                 status: 'failed',
+//                 message: 'You are already logged in !!',
+//             });
+//         }
+
+//         const { email, password } = req.body;
+
+//         const user = await User.findOne({ email: email });
+
+//         if (!user) {
+//             return res.send('There is no user exists');
+//         }
+
+//         const comparePassword = await bcrypt.compare(password, user.password);
+
+//         if (!comparePassword) {
+//             return res.status(400).send('Password are invalids');
+//         } else {
+//             req.session.user = user._id;
+//             res.status(200).json({
+//                 status: 'success',
+//                 message: 'Your login was successfull :)',
+//             });
+//         }
+//     } catch (err) {
+//         return next(err);
+//     }
+// };
+
 exports.login = async (req, res, next) => {
     try {
         if (req.cookies.user_sid) {
@@ -40,28 +74,34 @@ exports.login = async (req, res, next) => {
                 message: 'You are already logged in !!',
             });
         }
-
         const { email, password } = req.body;
 
         const user = await User.findOne({ email: email });
 
         if (!user) {
-            return res.send('There is no user exists');
+            return res.send('There is no user exists !');
         }
 
         const comparePassword = await bcrypt.compare(password, user.password);
 
         if (!comparePassword) {
-            return res.status(400).send('Password are invalids');
-        } else {
-            req.session.user = user._id;
-            res.status(200).json({
-                status: 'success',
-                message: 'Your login was successfull :)',
-            });
+            return res.status(400).send('Password are invalid !!');
         }
+
+        req.session.user = user._id;
+
+        const accessToken = jwt.sign(
+            { email: user.email },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES }
+        );
+
+        res.status(200).json({
+            status: 'success',
+            token: accessToken,
+        });
     } catch (err) {
-        return next(err);
+        return res.send(err);
     }
 };
 
@@ -82,6 +122,37 @@ exports.logout = async (req, res, next) => {
         }
     } catch (err) {
         return next(err);
+    }
+};
+
+exports.verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers.authorization;
+
+    // FORMAT TOKEN
+    // Authorization : Bearer <access_token>
+    if (bearerHeader) {
+        const bearerToken = bearerHeader.split(' ')[1];
+
+        jwt.verify(
+            bearerToken,
+            process.env.ACCESS_TOKEN_SECRET,
+            (err, user) => {
+                if (err) {
+                    res.status(403).json({
+                        status: 'Forbidden',
+                        meesage: 'You dont have access to this route !!',
+                    });
+                }
+
+                req.user = user;
+                next();
+            }
+        );
+    } else {
+        res.status(403).json({
+            status: 'Forbidden',
+            meesage: 'You dont have access to this route !!',
+        });
     }
 };
 
