@@ -6,11 +6,11 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./database/database');
 
-// Global Variable
-const PORT = process.env.PORT | 2080;
-
 // Load config
 dotenv.config({ path: './.env' });
+
+// Global Variable
+const PORT = process.env.PORT | 2080;
 
 // Connect into database
 connectDB();
