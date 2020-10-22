@@ -9,12 +9,12 @@ const authControllers = require('../controllers/auth_controllers');
 router
     .route('/')
     .get(fruitControllers.getAllFruits)
-    .post(authControllers.routeProtect, fruitControllers.createFruit);
+    .post(fruitControllers.createFruit);
 
 router
     .route('/:id')
     .get(fruitControllers.getOneFruit)
-    .patch(authControllers.routeProtect, fruitControllers.updateFruit)
-    .delete(authControllers.routeProtect, fruitControllers.deleteFruit);
+    .patch(fruitControllers.updateFruit)
+    .delete(fruitControllers.deleteFruit);
 
 module.exports = router;

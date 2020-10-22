@@ -9,12 +9,12 @@ const router = express.Router();
 router
     .route('/')
     .get(vegetableControllers.getAllVegetables)
-    .post(authControllers.routeProtect, vegetableControllers.createVegetable);
+    .post(authControllers.verifyToken, vegetableControllers.createVegetable);
 
 router
     .route('/:id')
     .get(vegetableControllers.getOneVegetable)
-    .patch(authControllers.routeProtect, vegetableControllers.updateVegetable)
-    .delete(authControllers.routeProtect, vegetableControllers.deleteVegetable);
+    .patch(vegetableControllers.updateVegetable)
+    .delete(vegetableControllers.deleteVegetable);
 
 module.exports = router;
