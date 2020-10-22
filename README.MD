@@ -17,6 +17,7 @@ Rest API for vegetables and fruits using node.js and mongoose
 -   [x] CRUD fruits
 -   [x] Register
 -   [x] Login & Logout
--   [x] Protect vegetable and fruit route for unlogged in user
--   [] Refactor some method to be more robust and efficient
--   [] Secure logout method
+-   [x] Protect some route with Authenticated Token
+-   [x] Authorization with JWT
+-   [] Proper Logout method
+-   [] Refresh new token when logout
