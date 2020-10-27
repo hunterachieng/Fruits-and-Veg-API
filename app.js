@@ -28,25 +28,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Initialize express-session to allow us track logged-in user using session
-app.use(
-    session({
-        key: 'user_sid',
-        secret: 'jagung_manis',
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            expires: 600000,
-        },
-    })
-);
+// app.use(
+//     session({
+//         key: 'user_sid',
+//         secret: 'jagung_manis',
+//         resave: false,
+//         saveUninitialized: false,
+//         cookie: {
+//             expires: 600000,
+//         },
+//     })
+// );
 
 // Mddleware for check if user cookie is still saved and user is not set, then log out the user
-app.use((req, res, next) => {
-    if (req.cookies.user_sid && !req.session.user) {
-        res.clearCookie('user_sid');
-    }
-    next();
-});
+// app.use((req, res, next) => {
+//     if (req.cookies.user_sid && !req.session.user) {
+//         res.clearCookie('user_sid');
+//     }
+//     next();
+// });
 
 //  Import route
 const vegetableRoutes = require('./routes/vegetable_routes');
