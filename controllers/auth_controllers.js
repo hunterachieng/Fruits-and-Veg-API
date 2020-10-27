@@ -68,12 +68,6 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
     try {
-        if (req.cookies.user_sid) {
-            return res.json({
-                status: 'failed',
-                message: 'You are already logged in !!',
-            });
-        }
         const { email, password } = req.body;
 
         const user = await User.findOne({ email: email });
@@ -88,13 +82,16 @@ exports.login = async (req, res, next) => {
             return res.status(400).send('Password are invalid !!');
         }
 
-        req.session.user = user._id;
-
         const accessToken = jwt.sign(
-            { email: user.email },
+            { id: user._id },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: process.env.JWT_EXPIRES }
         );
+
+        res.cookie('jwt_token', accessToken, {
+            expires: new Date(process.env.JWT_EXPIRES * 60 * 1000),
+            httpOnly: true,
+        });
 
         res.status(200).json({
             status: 'success',
@@ -107,53 +104,58 @@ exports.login = async (req, res, next) => {
 
 exports.logout = async (req, res, next) => {
     try {
-        if (req.session.user && req.cookies.user_sid) {
-            /* Unsafe method, maybe later this method will change for security interest */
-            res.clearCookie('user_sid');
+        res.cookie('jwt_token', 0, {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true,
+        });
 
-            res.status(200).json({
-                status: 'success',
-            });
-        } else {
-            res.status(400).json({
-                status: 'failed',
-                message: 'Logout failed',
-            });
-        }
+        res.status(200).json({
+            status: 'Logout success',
+        });
     } catch (err) {
-        return next(err);
+        return res.send(err);
     }
 };
 
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
     const bearerHeader = req.headers.authorization;
+    let bearerToken;
 
     // FORMAT TOKEN
     // Authorization : Bearer <access_token>
     if (bearerHeader) {
-        const bearerToken = bearerHeader.split(' ')[1];
+        bearerToken = bearerHeader.split(' ')[1];
+    }
 
-        jwt.verify(
-            bearerToken,
-            process.env.ACCESS_TOKEN_SECRET,
-            (err, user) => {
-                if (err) {
-                    res.status(403).json({
-                        status: 'Forbidden',
-                        meesage: 'You dont have access to this route !!',
-                    });
-                }
+    if (!bearerToken) {
+        return res.send('Please login to get token !');
+    }
 
-                req.user = user;
-                next();
+    const validToken = jwt.verify(
+        bearerToken,
+        process.env.ACCESS_TOKEN_SECRET,
+        (err, user) => {
+            if (err) {
+                res.status(403).json({
+                    status: 'Forbidden',
+                    meesage: 'You dont have access to this route !!',
+                });
             }
-        );
-    } else {
-        res.status(403).json({
-            status: 'Forbidden',
-            meesage: 'You dont have access to this route !!',
+            return user;
+        }
+    );
+
+    const loggedUser = await User.findById(validToken.id);
+
+    if (!loggedUser) {
+        return RegExp.status(401).json({
+            status: 'Failed',
+            message: 'There is no user exists with that token',
         });
     }
+
+    req.user = loggedUser;
+    next();
 };
 
 exports.routeProtect = async (req, res, next) => {
